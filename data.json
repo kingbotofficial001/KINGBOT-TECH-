@@ -9,6 +9,16 @@
       "plan": "free",
       "demoBalance": 100,
       "createdAt": "2026-07-23T07:13:45.740Z"
+    },
+    {
+      "id": "ba0ac420-90de-499e-9d49-22d246c26029",
+      "email": "teal@kingbot.tech",
+      "password": "699c4ba55c8e2c2055c346907cf9b005988736637ac21dde09e32275e0d63cca",
+      "name": "Teal Trader",
+      "verified": false,
+      "plan": "starter",
+      "demoBalance": 1000,
+      "createdAt": "2026-07-23T07:20:53.668Z"
     }
   ],
   "sessions": [
@@ -21,7 +31,27 @@
       "userId": "65729233-e89c-45d2-84cf-67cd2b5fb1d2",
       "token": "f4932f76-1dd0-4985-a611-51e81de59765",
       "createdAt": "2026-07-23T07:13:45.751Z"
+    },
+    {
+      "userId": "ba0ac420-90de-499e-9d49-22d246c26029",
+      "token": "1fc973dd-21b9-4709-a707-f9dfcdfe0f8d",
+      "createdAt": "2026-07-23T07:20:53.668Z"
+    },
+    {
+      "userId": "ba0ac420-90de-499e-9d49-22d246c26029",
+      "token": "f13e51f7-b786-4304-925e-c72db6a19d23",
+      "createdAt": "2026-07-23T07:20:53.692Z"
     }
   ],
-  "brokerConnections": []
+  "brokerConnections": [],
+  "bots": [],
+  "payments": [
+    {
+      "id": "78888305-32a8-42f1-b487-8292acb76dda",
+      "userId": "ba0ac420-90de-499e-9d49-22d246c26029",
+      "plan": "starter",
+      "amount": 100,
+      "createdAt": "2026-07-23T07:21:38.693Z"
+    }
+  ]
 }

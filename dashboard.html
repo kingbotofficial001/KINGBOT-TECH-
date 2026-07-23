@@ -22,45 +22,59 @@
 
     <main class="page-shell">
       <section class="container page-intro">
-        <span class="eyebrow">PERSONAL TRADING DESK</span>
-        <h1 id="welcomeTitle">Welcome back</h1>
-        <p>Your bot workspace, analytics, AI support, and broker connections are available in one place.</p>
+        <div class="hero-actions" style="justify-content: space-between; align-items: center; flex-wrap: wrap;">
+          <div>
+            <span class="eyebrow">TRADING DESK</span>
+            <h1 id="welcomeTitle">Welcome back</h1>
+          </div>
+          <div class="toggle-group">
+            <button class="button secondary mode-btn active" data-mode="demo">Demo mode</button>
+            <button class="button secondary mode-btn" data-mode="live">Live mode</button>
+          </div>
+        </div>
+        <p>Your bot fleet, analytics, AI support, and broker connections are managed from one high-tech command center.</p>
       </section>
 
-      <section class="container feature-grid">
+      <section class="container dashboard-grid">
         <article class="panel">
-          <h3>Account status</h3>
+          <h3>Account snapshot</h3>
           <p id="accountInfo">Loading...</p>
+          <p id="modeInfo" class="stat-pill">Mode: demo</p>
         </article>
         <article class="panel">
-          <h3>Active strategies</h3>
-          <p>Trend Breakout • Mean Reversion • Scalp Momentum</p>
-        </article>
-        <article class="panel">
-          <h3>AI assistant</h3>
-          <p>Ask for help with risk, execution, or strategy changes.</p>
-        </article>
-        <article class="panel">
-          <h3>Broker connections</h3>
+          <h3>Performance overview</h3>
           <p id="brokerInfo">Loading...</p>
         </article>
       </section>
 
-      <section class="container settings-grid">
+      <section class="container dashboard-grid">
         <div class="panel">
-          <h2>Quick AI chat</h2>
+          <div class="section-heading">
+            <h2>Bot fleet</h2>
+            <button class="button" id="createBotBtn" type="button">Create bot</button>
+          </div>
+          <div id="botList"></div>
+        </div>
+        <div class="panel">
+          <h2>Upgrade plan</h2>
+          <form id="paymentForm">
+            <label>Plan<select id="planSelect"><option value="starter">Starter $100</option><option value="professional">Professional $450</option><option value="enterprise">Enterprise $1400</option></select></label>
+            <button class="button" type="submit">Activate plan</button>
+          </form>
+          <p id="paymentStatus" class="status-text">Manual payment also available at +27 748 275 015.</p>
+        </div>
+      </section>
+
+      <section class="container dashboard-grid">
+        <div class="panel">
+          <h2>AI assistant</h2>
           <input id="aiInput" placeholder="Ask about your strategy or broker" />
           <button class="button" id="aiButton">Send</button>
           <p id="aiReply" class="status-text">AI assistant ready.</p>
         </div>
         <div class="panel">
           <h2>Broker connect</h2>
-          <select id="brokerSelect">
-            <option>MT5</option>
-            <option>OANDA</option>
-            <option>Binance</option>
-            <option>Interactive Brokers</option>
-          </select>
+          <select id="brokerSelect"><option>MT5</option><option>OANDA</option><option>Binance</option><option>Interactive Brokers</option></select>
           <button class="button" id="connectButton">Connect broker</button>
           <p id="brokerStatus" class="status-text">Demo mode until subscription is active.</p>
         </div>
@@ -76,6 +90,12 @@
     <script src="./app.js"></script>
     <script>
       const token = localStorage.getItem('kingbotToken');
+      const modeButtons = Array.from(document.querySelectorAll('.mode-btn'));
+
+      const setModeButtons = (mode) => {
+        modeButtons.forEach((button) => button.classList.toggle('active', button.dataset.mode === mode));
+      };
+
       const loadUser = async () => {
         if (!token) {
           window.location.href = '/login.html';
@@ -88,7 +108,9 @@
         }
         const data = await res.json();
         document.getElementById('welcomeTitle').textContent = `Welcome back, ${data.user.name}`;
-        document.getElementById('accountInfo').textContent = `${data.user.email} • Plan: ${data.user.plan} • Demo balance: $${data.user.demoBalance}`;
+        document.getElementById('accountInfo').textContent = `${data.user.email} • Plan: ${data.user.plan} • Balance: $${data.user.demoBalance}`;
+        document.getElementById('modeInfo').textContent = `Mode: ${data.user.mode || 'demo'}`;
+        setModeButtons(data.user.mode || 'demo');
       };
 
       const loadAnalytics = async () => {
@@ -96,12 +118,87 @@
         const res = await fetch('/api/analytics', { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
         if (res.ok) {
-          document.getElementById('brokerInfo').textContent = `${data.connectedBrokers} connected broker(s) • Win rate ${data.winRate}%`;
+          document.getElementById('brokerInfo').textContent = `${data.connectedBrokers} connected broker(s) • Win rate ${data.winRate}% • Active bots ${data.activeBots}`;
         }
+      };
+
+      const loadBots = async () => {
+        if (!token) return;
+        const res = await fetch('/api/bots', { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        const list = document.getElementById('botList');
+        if (!res.ok) return;
+        list.innerHTML = data.bots.map((bot) => `
+          <div class="bot-card">
+            <div>
+              <strong>${bot.name}</strong>
+              <div class="stat-pill">${bot.strategy} • ${bot.timeframe}</div>
+            </div>
+            <div class="toggle-group">
+              <button class="button secondary" data-action="toggle" data-id="${bot.id}">${bot.status === 'running' ? 'Pause' : 'Start'}</button>
+            </div>
+          </div>
+        `).join('');
       };
 
       document.getElementById('logoutBtn').addEventListener('click', () => {
         localStorage.removeItem('kingbotToken');
+      });
+
+      modeButtons.forEach((button) => {
+        button.addEventListener('click', async () => {
+          const mode = button.dataset.mode;
+          const res = await fetch('/api/mode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ mode })
+          });
+          const payload = await res.json();
+          if (res.ok) {
+            setModeButtons(mode);
+            document.getElementById('modeInfo').textContent = `Mode: ${mode}`;
+            document.getElementById('brokerStatus').textContent = mode === 'live' ? 'Live mode activated' : 'Demo mode active';
+          } else {
+            document.getElementById('brokerStatus').textContent = payload.error || 'Mode change failed';
+          }
+        });
+      });
+
+      document.getElementById('createBotBtn').addEventListener('click', async () => {
+        const res = await fetch('/api/bots', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ action: 'create' })
+        });
+        if (res.ok) {
+          loadBots();
+        }
+      });
+
+      document.getElementById('botList').addEventListener('click', async (event) => {
+        const button = event.target.closest('button[data-action="toggle"]');
+        if (!button) return;
+        const res = await fetch('/api/bots', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ action: 'toggle', id: button.dataset.id })
+        });
+        if (res.ok) {
+          loadBots();
+        }
+      });
+
+      document.getElementById('paymentForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const plan = document.getElementById('planSelect').value;
+        const res = await fetch('/api/payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ plan })
+        });
+        const payload = await res.json();
+        document.getElementById('paymentStatus').textContent = payload.message || payload.error;
+        loadUser();
       });
 
       document.getElementById('aiButton').addEventListener('click', async () => {
@@ -125,10 +222,12 @@
         });
         const payload = await response.json();
         document.getElementById('brokerStatus').textContent = `Connected to ${payload.connection?.broker || select.value}`;
+        loadAnalytics();
       });
 
       loadUser();
       loadAnalytics();
+      loadBots();
     </script>
   </body>
 </html>
