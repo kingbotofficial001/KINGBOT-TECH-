@@ -22,7 +22,7 @@
           <label>Email<input name="email" type="email" required /></label>
           <label>Password<input name="password" type="password" required /></label>
           <button class="button" type="submit">Create account</button>
-          <p id="signupMessage" class="status-text">Verification email pending.</p>
+          <p id="signupMessage" class="status-text">Verification flow is enabled.</p>
         </form>
         <div class="panel">
           <h2>What you get</h2>
@@ -47,8 +47,7 @@
         });
         const data = await response.json();
         if (response.ok) {
-          localStorage.setItem('kingbotToken', '');
-          document.getElementById('signupMessage').textContent = 'Account created. Verification is pending and you can log in next.';
+          document.getElementById('signupMessage').textContent = `Account created. Verification link ready in the backend response. Please use /api/verify?token=${data.verificationToken}`;
         } else {
           document.getElementById('signupMessage').textContent = data.error || 'Signup failed';
         }

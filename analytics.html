@@ -23,34 +23,31 @@
     <main class="page-shell">
       <section class="container page-intro">
         <span class="eyebrow">ADVANCED ANALYTICS</span>
-        <h1>Real-time performance intelligence for each account.</h1>
-        <p>View balance, win rate, profitability, and broker connectivity metrics with data scoped to your account.</p>
+        <h1>Clear intelligence for every account and strategy.</h1>
+        <p>Monitor balance, win rate, profitability, and connected brokers from a premium analytics cockpit.</p>
       </section>
 
       <section class="container feature-grid">
-        <article class="panel">
-          <h3>Balance</h3>
-          <p id="balanceValue">$100</p>
-        </article>
-        <article class="panel">
-          <h3>Win rate</h3>
-          <p id="winRateValue">94.2%</p>
-        </article>
-        <article class="panel">
-          <h3>Monthly PnL</h3>
-          <p id="pnlValue">+$14,280</p>
-        </article>
-        <article class="panel">
-          <h3>Brokers connected</h3>
-          <p id="brokerCount">0</p>
-        </article>
+        <article class="panel"><h3>Balance</h3><p id="balanceValue">$100</p></article>
+        <article class="panel"><h3>Win rate</h3><p id="winRateValue">94.2%</p></article>
+        <article class="panel"><h3>Monthly PnL</h3><p id="pnlValue">+$14,280</p></article>
+        <article class="panel"><h3>Brokers connected</h3><p id="brokerCount">0</p></article>
+      </section>
+
+      <section class="container dashboard-grid">
+        <div class="panel">
+          <h2>Performance chart</h2>
+          <div class="mini-chart" style="height: 220px; margin-top: 0.5rem;"><div class="trend-line"></div><div class="trend-line two"></div></div>
+        </div>
+        <div class="panel">
+          <h2>Live market watch</h2>
+          <div id="marketList"></div>
+        </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <div class="container footer-row">
-        <p>© <span class="year"></span> KINGBOT.</p>
-      </div>
+      <div class="container footer-row"><p>© <span class="year"></span> KINGBOT.</p></div>
     </footer>
 
     <script src="./app.js"></script>
@@ -72,7 +69,18 @@
         document.getElementById('pnlValue').textContent = `+$${data.monthlyPnL.toLocaleString()}`;
         document.getElementById('brokerCount').textContent = data.connectedBrokers;
       };
+      const loadMarkets = async () => {
+        const res = await fetch('/api/markets');
+        const data = await res.json();
+        document.getElementById('marketList').innerHTML = data.markets.map((market) => `
+          <div class="bot-card">
+            <div><strong>${market.symbol}</strong></div>
+            <div>${market.price} <span class="stat-pill">${market.change}</span></div>
+          </div>
+        `).join('');
+      };
       loadAnalytics();
+      loadMarkets();
     </script>
   </body>
 </html>

@@ -1,32 +1,10 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
+const { createDatabase } = require('./storage');
 
 const PORT = process.env.PORT || 3000;
-const DATA_FILE = path.join(__dirname, 'data.json');
-
-function ensureDataFile() {
-  if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify({ users: [], sessions: [], brokerConnections: [], bots: [], payments: [] }, null, 2));
-  }
-}
-
-function readData() {
-  ensureDataFile();
-  const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-  if (!Array.isArray(data.users)) data.users = [];
-  if (!Array.isArray(data.sessions)) data.sessions = [];
-  if (!Array.isArray(data.brokerConnections)) data.brokerConnections = [];
-  if (!Array.isArray(data.bots)) data.bots = [];
-  if (!Array.isArray(data.payments)) data.payments = [];
-  return data;
-}
-
-function writeData(data) {
-  ensureDataFile();
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-}
+const dbPromise = createDatabase(path.join(__dirname, 'kingbot.sqlite'));
 
 function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, { 'Content-Type': 'application/json' });
@@ -72,14 +50,8 @@ function getContentType(filePath) {
   }
 }
 
-function getSessionUser(data, token) {
-  const session = data.sessions.find((item) => item.token === token);
-  if (!session) return null;
-  const user = data.users.find((item) => item.id === session.userId);
-  return user ? { user, session } : null;
-}
-
 const server = http.createServer(async (req, res) => {
+  const db = await dbPromise;
   const url = new URL(req.url, `http://${req.headers.host}`);
   const pathname = url.pathname;
 
@@ -96,32 +68,30 @@ const server = http.createServer(async (req, res) => {
 
     try {
       const body = await parseBody(req);
-      const data = readData();
-      const existing = data.users.find((user) => user.email === body.email);
+      const existing = await db.getUserByEmail(body.email);
       if (existing) {
         sendJson(res, 409, { error: 'User already exists' });
         return;
       }
 
-      const user = {
-        id: crypto.randomUUID(),
-        email: body.email,
-        password: crypto.createHash('sha256').update(body.password).digest('hex'),
-        name: body.name || 'Trader',
-        verified: true,
-        plan: 'free',
-        mode: 'demo',
-        demoBalance: 100,
-        createdAt: new Date().toISOString(),
-      };
-      data.users.push(user);
-      data.sessions.push({ userId: user.id, token: crypto.randomUUID(), createdAt: new Date().toISOString() });
-      data.bots.push({ id: crypto.randomUUID(), userId: user.id, name: 'Alpha Demo', strategy: 'Trend Breakout', timeframe: '15m', status: 'running' });
-      writeData(data);
-      sendJson(res, 201, { user: { id: user.id, email: user.email, name: user.name, verified: user.verified, plan: user.plan, demoBalance: user.demoBalance, mode: user.mode } });
+      const user = await db.createUser({ name: body.name || 'Trader', email: body.email, password: body.password });
+      const token = await db.createSession(user.id);
+      const verificationToken = await db.createVerificationToken(user.id);
+      sendJson(res, 201, { user: { id: user.id, email: user.email, name: user.name, verified: user.verified, plan: user.plan, demoBalance: user.demoBalance, mode: user.mode }, token, verificationToken });
     } catch (error) {
       sendJson(res, 400, { error: 'Invalid request body' });
     }
+    return;
+  }
+
+  if (pathname === '/api/verify') {
+    const token = url.searchParams.get('token');
+    if (!token) {
+      sendJson(res, 400, { error: 'Missing verification token' });
+      return;
+    }
+    const user = await db.verifyUserByToken(token);
+    sendJson(res, 200, { verified: !!user, user });
     return;
   }
 
@@ -133,15 +103,12 @@ const server = http.createServer(async (req, res) => {
 
     try {
       const body = await parseBody(req);
-      const data = readData();
-      const user = data.users.find((item) => item.email === body.email && item.password === crypto.createHash('sha256').update(body.password).digest('hex'));
+      const user = await db.validateUser(body.email, body.password);
       if (!user) {
         sendJson(res, 401, { error: 'Invalid credentials' });
         return;
       }
-      const token = crypto.randomUUID();
-      data.sessions.push({ userId: user.id, token, createdAt: new Date().toISOString() });
-      writeData(data);
+      const token = await db.createSession(user.id);
       sendJson(res, 200, { token, user: { id: user.id, email: user.email, name: user.name, verified: user.verified, plan: user.plan, demoBalance: user.demoBalance, mode: user.mode } });
     } catch (error) {
       sendJson(res, 400, { error: 'Invalid request body' });
@@ -155,13 +122,11 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 401, { error: 'Unauthorized' });
       return;
     }
-    const data = readData();
-    const auth = getSessionUser(data, token);
-    if (!auth) {
+    const user = await db.getSessionUser(token);
+    if (!user) {
       sendJson(res, 401, { error: 'Invalid token' });
       return;
     }
-    const { user } = auth;
     sendJson(res, 200, { user: { id: user.id, email: user.email, name: user.name, verified: user.verified, plan: user.plan, demoBalance: user.demoBalance, mode: user.mode } });
     return;
   }
@@ -172,27 +137,24 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 401, { error: 'Unauthorized' });
       return;
     }
-    const data = readData();
-    const auth = getSessionUser(data, token);
-    if (!auth) {
+    const user = await db.getSessionUser(token);
+    if (!user) {
       sendJson(res, 401, { error: 'Invalid token' });
       return;
     }
     if (req.method === 'GET') {
-      sendJson(res, 200, { mode: auth.user.mode });
+      sendJson(res, 200, { mode: user.mode });
       return;
     }
     if (req.method === 'POST') {
-      parseBody(req).then((body) => {
-        const mode = body.mode === 'live' ? 'live' : 'demo';
-        if (mode === 'live' && !['starter', 'professional', 'enterprise'].includes(auth.user.plan)) {
-          sendJson(res, 403, { error: 'Live mode requires a paid plan.' });
-          return;
-        }
-        auth.user.mode = mode;
-        writeData(data);
-        sendJson(res, 200, { mode });
-      }).catch(() => sendJson(res, 400, { error: 'Invalid request body' }));
+      const body = await parseBody(req);
+      const mode = body.mode === 'live' ? 'live' : 'demo';
+      if (mode === 'live' && !['starter', 'professional', 'enterprise'].includes(user.plan)) {
+        sendJson(res, 403, { error: 'Live mode requires a paid plan.' });
+        return;
+      }
+      const updated = await db.setMode(user.id, mode);
+      sendJson(res, 200, { mode: updated.mode });
       return;
     }
   }
@@ -203,39 +165,33 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 401, { error: 'Unauthorized' });
       return;
     }
-    const data = readData();
-    const auth = getSessionUser(data, token);
-    if (!auth) {
+    const user = await db.getSessionUser(token);
+    if (!user) {
       sendJson(res, 401, { error: 'Invalid token' });
       return;
     }
     if (req.method === 'GET') {
-      const bots = data.bots.filter((bot) => bot.userId === auth.user.id);
+      const bots = await db.getBots(user.id);
       sendJson(res, 200, { bots });
       return;
     }
     if (req.method === 'POST') {
-      parseBody(req).then((body) => {
-        if (body.action === 'create') {
-          const bot = { id: crypto.randomUUID(), userId: auth.user.id, name: `Bot ${data.bots.filter((item) => item.userId === auth.user.id).length + 1}`, strategy: 'Mean Reversion', timeframe: '1h', status: 'paused' };
-          data.bots.push(bot);
-          writeData(data);
-          sendJson(res, 200, { bot });
+      const body = await parseBody(req);
+      if (body.action === 'create') {
+        const bot = await db.createBot(user.id);
+        sendJson(res, 200, { bot });
+        return;
+      }
+      if (body.action === 'toggle') {
+        const bot = await db.toggleBot(body.id, user.id);
+        if (!bot) {
+          sendJson(res, 404, { error: 'Bot not found' });
           return;
         }
-        if (body.action === 'toggle') {
-          const bot = data.bots.find((item) => item.id === body.id && item.userId === auth.user.id);
-          if (!bot) {
-            sendJson(res, 404, { error: 'Bot not found' });
-            return;
-          }
-          bot.status = bot.status === 'running' ? 'paused' : 'running';
-          writeData(data);
-          sendJson(res, 200, { bot });
-          return;
-        }
-        sendJson(res, 400, { error: 'Invalid bot action' });
-      }).catch(() => sendJson(res, 400, { error: 'Invalid request body' }));
+        sendJson(res, 200, { bot });
+        return;
+      }
+      sendJson(res, 400, { error: 'Invalid bot action' });
       return;
     }
   }
@@ -250,21 +206,15 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 401, { error: 'Unauthorized' });
       return;
     }
-    parseBody(req).then((body) => {
-      const data = readData();
-      const auth = getSessionUser(data, token);
-      if (!auth) {
-        sendJson(res, 401, { error: 'Invalid token' });
-        return;
-      }
-      const plan = body.plan || 'starter';
-      const plans = { starter: 100, professional: 450, enterprise: 1400 };
-      auth.user.plan = plan;
-      auth.user.demoBalance = 1000;
-      data.payments.push({ id: crypto.randomUUID(), userId: auth.user.id, plan, amount: plans[plan] || 100, createdAt: new Date().toISOString() });
-      writeData(data);
-      sendJson(res, 200, { message: `${plan} plan activated successfully.` });
-    }).catch(() => sendJson(res, 400, { error: 'Invalid request body' }));
+    const body = await parseBody(req);
+    const user = await db.getSessionUser(token);
+    if (!user) {
+      sendJson(res, 401, { error: 'Invalid token' });
+      return;
+    }
+    const plan = body.plan || 'starter';
+    const result = await db.activatePlan(user.id, plan);
+    sendJson(res, 200, { message: `${plan} plan activated successfully.`, amount: result.amount });
     return;
   }
 
@@ -273,16 +223,12 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 405, { error: 'Method not allowed' });
       return;
     }
-    try {
-      const body = await parseBody(req);
-      const message = (body.message || '').trim();
-      const reply = message
-        ? `AI Trading Assistant: I reviewed your request about ${message}. For live execution, connect a broker and activate a strategy with risk controls.`
-        : 'AI Trading Assistant: Ask about strategy setup, broker connectivity, or analytics.';
-      sendJson(res, 200, { reply });
-    } catch (error) {
-      sendJson(res, 400, { error: 'Invalid request body' });
-    }
+    const body = await parseBody(req);
+    const message = (body.message || '').trim();
+    const reply = message
+      ? `AI Trading Assistant: I reviewed your request about ${message}. For live execution, connect a broker and activate a strategy with risk controls.`
+      : 'AI Trading Assistant: Ask about strategy setup, broker connectivity, or analytics.';
+    sendJson(res, 200, { reply });
     return;
   }
 
@@ -291,22 +237,15 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 405, { error: 'Method not allowed' });
       return;
     }
-    try {
-      const body = await parseBody(req);
-      const token = req.headers.authorization?.replace('Bearer ', '');
-      const data = readData();
-      const auth = getSessionUser(data, token);
-      if (!auth) {
-        sendJson(res, 401, { error: 'Unauthorized' });
-        return;
-      }
-      const connection = { id: crypto.randomUUID(), userId: auth.user.id, broker: body.broker || 'MT5', status: 'connected', createdAt: new Date().toISOString() };
-      data.brokerConnections.push(connection);
-      writeData(data);
-      sendJson(res, 200, { connection });
-    } catch (error) {
-      sendJson(res, 400, { error: 'Invalid request body' });
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    const body = await parseBody(req);
+    const user = await db.getSessionUser(token);
+    if (!user) {
+      sendJson(res, 401, { error: 'Unauthorized' });
+      return;
     }
+    const connection = await db.createBrokerConnection(user.id, body.broker || 'MT5');
+    sendJson(res, 200, { connection });
     return;
   }
 
@@ -316,22 +255,34 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 401, { error: 'Unauthorized' });
       return;
     }
-    const data = readData();
-    const auth = getSessionUser(data, token);
-    if (!auth) {
+    const user = await db.getSessionUser(token);
+    if (!user) {
       sendJson(res, 401, { error: 'Invalid token' });
       return;
     }
-    const user = auth.user;
+    const brokers = await db.getBrokerConnections(user.id);
+    const bots = await db.getBots(user.id);
     sendJson(res, 200, {
       user: user.name || 'Trader',
       balance: user.demoBalance || 100,
       winRate: 94.2,
       monthlyPnL: 14280,
-      activeBots: data.bots.filter((bot) => bot.userId === user.id).length,
-      connectedBrokers: data.brokerConnections.filter((item) => item.userId === user.id).length,
+      activeBots: bots.length,
+      connectedBrokers: brokers.length,
       mode: user.mode,
       plan: user.plan,
+    });
+    return;
+  }
+
+  if (pathname === '/api/markets') {
+    sendJson(res, 200, {
+      markets: [
+        { symbol: 'EUR/USD', price: 1.0894, change: '+0.52%' },
+        { symbol: 'BTC/USD', price: 62948.12, change: '+1.14%' },
+        { symbol: 'XAU/USD', price: 2374.8, change: '-0.33%' },
+        { symbol: 'SPX500', price: 5524.12, change: '+0.81%' }
+      ]
     });
     return;
   }
