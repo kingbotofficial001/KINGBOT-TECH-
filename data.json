@@ -1,0 +1,27 @@
+{
+  "users": [
+    {
+      "id": "65729233-e89c-45d2-84cf-67cd2b5fb1d2",
+      "email": "demo@kingbot.tech",
+      "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+      "name": "Demo Trader",
+      "verified": false,
+      "plan": "free",
+      "demoBalance": 100,
+      "createdAt": "2026-07-23T07:13:45.740Z"
+    }
+  ],
+  "sessions": [
+    {
+      "userId": "65729233-e89c-45d2-84cf-67cd2b5fb1d2",
+      "token": "ecee8e2e-ee00-470e-bded-caef4be944cf",
+      "createdAt": "2026-07-23T07:13:45.740Z"
+    },
+    {
+      "userId": "65729233-e89c-45d2-84cf-67cd2b5fb1d2",
+      "token": "f4932f76-1dd0-4985-a611-51e81de59765",
+      "createdAt": "2026-07-23T07:13:45.751Z"
+    }
+  ],
+  "brokerConnections": []
+}

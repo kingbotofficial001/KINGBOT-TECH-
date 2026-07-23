@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KINGBOT Sign Up</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a class="brand" href="./index.html">KINGBOT</a>
+        <a class="button button-ghost" href="./login.html">Login</a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="container settings-grid">
+        <form class="panel" id="signupForm">
+          <h2>Create account</h2>
+          <label>Name<input name="name" required /></label>
+          <label>Email<input name="email" type="email" required /></label>
+          <label>Password<input name="password" type="password" required /></label>
+          <button class="button" type="submit">Create account</button>
+          <p id="signupMessage" class="status-text">Verification email pending.</p>
+        </form>
+        <div class="panel">
+          <h2>What you get</h2>
+          <ul class="list">
+            <li>Free demo bot with $100 virtual balance</li>
+            <li>AI support agent access</li>
+            <li>Strategy templates and analytics dashboard</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      document.getElementById('signupForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const payload = Object.fromEntries(formData.entries());
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem('kingbotToken', '');
+          document.getElementById('signupMessage').textContent = 'Account created. Verification is pending and you can log in next.';
+        } else {
+          document.getElementById('signupMessage').textContent = data.error || 'Signup failed';
+        }
+      });
+    </script>
+  </body>
+</html>

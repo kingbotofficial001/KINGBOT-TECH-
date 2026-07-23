@@ -1,0 +1,13 @@
+{
+  "name": "kingbot-platform",
+  "version": "1.0.0",
+  "description": "Functional KINGBOT trading platform backend and UI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

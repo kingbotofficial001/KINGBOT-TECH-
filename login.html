@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KINGBOT Login</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a class="brand" href="./index.html">KINGBOT</a>
+        <a class="button button-ghost" href="./signup.html">Create account</a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="container settings-grid">
+        <form class="panel" id="loginForm">
+          <h2>Welcome back</h2>
+          <label>Email<input name="email" type="email" required /></label>
+          <label>Password<input name="password" type="password" required /></label>
+          <button class="button" type="submit">Login</button>
+          <p id="loginMessage" class="status-text">Use your account to access the dashboard.</p>
+        </form>
+        <div class="panel">
+          <h2>Secure access</h2>
+          <ul class="list">
+            <li>Account-scoped data and analytics</li>
+            <li>Protected dashboard and broker controls</li>
+            <li>AI support and strategy control</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const payload = Object.fromEntries(formData.entries());
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem('kingbotToken', data.token);
+          window.location.href = '/dashboard.html';
+        } else {
+          document.getElementById('loginMessage').textContent = data.error || 'Login failed';
+        }
+      });
+    </script>
+  </body>
+</html>

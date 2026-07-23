@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KINGBOT Analytics</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a class="brand" href="./index.html">KINGBOT</a>
+        <nav class="nav-links">
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="./analytics.html">Analytics</a>
+          <a href="./settings.html">Bot Settings</a>
+          <a href="./brokers.html">Broker Connect</a>
+        </nav>
+        <a class="button button-ghost" href="./index.html">Home</a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="container page-intro">
+        <span class="eyebrow">ADVANCED ANALYTICS</span>
+        <h1>Real-time performance intelligence for each account.</h1>
+        <p>View balance, win rate, profitability, and broker connectivity metrics with data scoped to your account.</p>
+      </section>
+
+      <section class="container feature-grid">
+        <article class="panel">
+          <h3>Balance</h3>
+          <p id="balanceValue">$100</p>
+        </article>
+        <article class="panel">
+          <h3>Win rate</h3>
+          <p id="winRateValue">94.2%</p>
+        </article>
+        <article class="panel">
+          <h3>Monthly PnL</h3>
+          <p id="pnlValue">+$14,280</p>
+        </article>
+        <article class="panel">
+          <h3>Brokers connected</h3>
+          <p id="brokerCount">0</p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span class="year"></span> KINGBOT.</p>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+    <script>
+      const token = localStorage.getItem('kingbotToken');
+      const loadAnalytics = async () => {
+        if (!token) {
+          window.location.href = '/login.html';
+          return;
+        }
+        const res = await fetch('/api/analytics', { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) {
+          window.location.href = '/login.html';
+          return;
+        }
+        const data = await res.json();
+        document.getElementById('balanceValue').textContent = `$${data.balance}`;
+        document.getElementById('winRateValue').textContent = `${data.winRate}%`;
+        document.getElementById('pnlValue').textContent = `+$${data.monthlyPnL.toLocaleString()}`;
+        document.getElementById('brokerCount').textContent = data.connectedBrokers;
+      };
+      loadAnalytics();
+    </script>
+  </body>
+</html>

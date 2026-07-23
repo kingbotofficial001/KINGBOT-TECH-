@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KINGBOT Dashboard</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a class="brand" href="./index.html">KINGBOT</a>
+        <nav class="nav-links">
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="./analytics.html">Analytics</a>
+          <a href="./settings.html">Bot Settings</a>
+          <a href="./brokers.html">Broker Connect</a>
+        </nav>
+        <a class="button button-ghost" href="./index.html" id="logoutBtn">Logout</a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="container page-intro">
+        <span class="eyebrow">PERSONAL TRADING DESK</span>
+        <h1 id="welcomeTitle">Welcome back</h1>
+        <p>Your bot workspace, analytics, AI support, and broker connections are available in one place.</p>
+      </section>
+
+      <section class="container feature-grid">
+        <article class="panel">
+          <h3>Account status</h3>
+          <p id="accountInfo">Loading...</p>
+        </article>
+        <article class="panel">
+          <h3>Active strategies</h3>
+          <p>Trend Breakout • Mean Reversion • Scalp Momentum</p>
+        </article>
+        <article class="panel">
+          <h3>AI assistant</h3>
+          <p>Ask for help with risk, execution, or strategy changes.</p>
+        </article>
+        <article class="panel">
+          <h3>Broker connections</h3>
+          <p id="brokerInfo">Loading...</p>
+        </article>
+      </section>
+
+      <section class="container settings-grid">
+        <div class="panel">
+          <h2>Quick AI chat</h2>
+          <input id="aiInput" placeholder="Ask about your strategy or broker" />
+          <button class="button" id="aiButton">Send</button>
+          <p id="aiReply" class="status-text">AI assistant ready.</p>
+        </div>
+        <div class="panel">
+          <h2>Broker connect</h2>
+          <select id="brokerSelect">
+            <option>MT5</option>
+            <option>OANDA</option>
+            <option>Binance</option>
+            <option>Interactive Brokers</option>
+          </select>
+          <button class="button" id="connectButton">Connect broker</button>
+          <p id="brokerStatus" class="status-text">Demo mode until subscription is active.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span class="year"></span> KINGBOT.</p>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+    <script>
+      const token = localStorage.getItem('kingbotToken');
+      const loadUser = async () => {
+        if (!token) {
+          window.location.href = '/login.html';
+          return;
+        }
+        const res = await fetch('/api/me', { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) {
+          window.location.href = '/login.html';
+          return;
+        }
+        const data = await res.json();
+        document.getElementById('welcomeTitle').textContent = `Welcome back, ${data.user.name}`;
+        document.getElementById('accountInfo').textContent = `${data.user.email} • Plan: ${data.user.plan} • Demo balance: $${data.user.demoBalance}`;
+      };
+
+      const loadAnalytics = async () => {
+        if (!token) return;
+        const res = await fetch('/api/analytics', { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById('brokerInfo').textContent = `${data.connectedBrokers} connected broker(s) • Win rate ${data.winRate}%`;
+        }
+      };
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('kingbotToken');
+      });
+
+      document.getElementById('aiButton').addEventListener('click', async () => {
+        const input = document.getElementById('aiInput');
+        const reply = document.getElementById('aiReply');
+        const response = await fetch('/api/ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: input.value })
+        });
+        const payload = await response.json();
+        reply.textContent = payload.reply;
+      });
+
+      document.getElementById('connectButton').addEventListener('click', async () => {
+        const select = document.getElementById('brokerSelect');
+        const response = await fetch('/api/broker/connect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ broker: select.value })
+        });
+        const payload = await response.json();
+        document.getElementById('brokerStatus').textContent = `Connected to ${payload.connection?.broker || select.value}`;
+      });
+
+      loadUser();
+      loadAnalytics();
+    </script>
+  </body>
+</html>
