@@ -47,8 +47,9 @@
         const data = await response.json();
         if (response.ok) {
           localStorage.setItem('kingbotToken', data.token);
-          window.location.href = '/dashboard.html';
+          window.location.replace('/dashboard.html');
         } else {
+          localStorage.removeItem('kingbotToken');
           document.getElementById('loginMessage').textContent = data.error || 'Login failed';
         }
       });

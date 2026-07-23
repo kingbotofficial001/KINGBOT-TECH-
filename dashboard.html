@@ -141,8 +141,10 @@
         `).join('');
       };
 
-      document.getElementById('logoutBtn').addEventListener('click', () => {
+      document.getElementById('logoutBtn').addEventListener('click', (event) => {
+        event.preventDefault();
         localStorage.removeItem('kingbotToken');
+        window.location.replace('/login.html');
       });
 
       modeButtons.forEach((button) => {

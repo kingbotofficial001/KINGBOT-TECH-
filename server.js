@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { createDatabase } = require('./storage');
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 const dbPromise = createDatabase(path.join(__dirname, 'kingbot.sqlite'));
 
 function sendJson(res, statusCode, payload) {
@@ -50,7 +50,7 @@ function getContentType(filePath) {
   }
 }
 
-const server = http.createServer(async (req, res) => {
+const handleRequest = async (req, res) => {
   const db = await dbPromise;
   const url = new URL(req.url, `http://${req.headers.host}`);
   const pathname = url.pathname;
@@ -317,8 +317,29 @@ const server = http.createServer(async (req, res) => {
   } else {
     serveFile(res, path.join(__dirname, 'index.html'), 'text/html');
   }
-});
+};
 
-server.listen(PORT, () => {
-  console.log(`KINGBOT server running on http://127.0.0.1:${PORT}`);
-});
+function startServer(port) {
+  const server = http.createServer((req, res) => {
+    handleRequest(req, res).catch((error) => {
+      console.error('Request failed:', error);
+      sendJson(res, 500, { error: 'Internal server error' });
+    });
+  });
+
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE' && port < 3100) {
+      console.warn(`Port ${port} is busy; trying ${port + 1}`);
+      startServer(port + 1);
+      return;
+    }
+    console.error(error);
+    process.exit(1);
+  });
+
+  server.listen(port, () => {
+    console.log(`KINGBOT server running on http://127.0.0.1:${port}`);
+  });
+}
+
+startServer(PORT);

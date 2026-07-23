@@ -47,7 +47,9 @@
         });
         const data = await response.json();
         if (response.ok) {
-          document.getElementById('signupMessage').textContent = `Account created. Verification link ready in the backend response. Please use /api/verify?token=${data.verificationToken}`;
+          localStorage.setItem('kingbotToken', data.token);
+          document.getElementById('signupMessage').textContent = 'Account created. Redirecting to your dashboard...';
+          window.location.replace('/dashboard.html');
         } else {
           document.getElementById('signupMessage').textContent = data.error || 'Signup failed';
         }
