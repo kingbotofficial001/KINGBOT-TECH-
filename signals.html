@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KINGBOT Signals</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a class="brand" href="./index.html">KINGBOT</a>
+        <nav class="nav-links">
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="./analytics.html">Analytics</a>
+          <a href="./signals.html">Signals</a>
+          <a href="./academy.html">Academy</a>
+        </nav>
+        <a class="button button-ghost" href="./login.html">Access</a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="container page-intro">
+        <span class="eyebrow">MARKET SIGNALS</span>
+        <h1>Real-time AI trading signals and strategy ideas</h1>
+        <p>View a live-style feed of generated market signals to support your trading decisions.</p>
+      </section>
+      <section class="container dashboard-grid">
+        <div class="panel">
+          <h2>Latest signals</h2>
+          <div id="signalList">Loading...</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span class="year"></span> KINGBOT.</p>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+    <script>
+      const renderSignals = async () => {
+        const res = await fetch('/api/signals');
+        const data = await res.json();
+        const list = document.getElementById('signalList');
+        list.innerHTML = (data.signals || []).map((signal) => `
+          <div class="bot-card">
+            <div>
+              <strong>${signal.symbol}</strong>
+              <div class="stat-pill">${signal.direction.toUpperCase()} • ${signal.confidence}% confidence</div>
+              <p>Entry price: ${signal.price}</p>
+            </div>
+          </div>
+        `).join('');
+      };
+      renderSignals();
+    </script>
+  </body>
+</html>

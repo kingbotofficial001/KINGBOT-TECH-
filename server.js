@@ -286,6 +286,22 @@ const handleRequest = async (req, res) => {
     return;
   }
 
+  if (pathname === '/api/signals') {
+    if (req.method === 'GET') {
+      const signals = await db.getSignals();
+      sendJson(res, 200, { signals });
+      return;
+    }
+    if (req.method === 'POST') {
+      const body = await parseBody(req);
+      const signal = await db.createSignal(body);
+      sendJson(res, 200, { signal });
+      return;
+    }
+    sendJson(res, 405, { error: 'Method not allowed' });
+    return;
+  }
+
   if (pathname === '/api/admin/metrics') {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (!token) {
@@ -386,6 +402,7 @@ const handleRequest = async (req, res) => {
     '/signup': 'signup.html',
     '/login': 'login.html',
     '/analytics': 'analytics.html',
+    '/signals': 'signals.html',
     '/academy': 'academy.html',
     '/admin': 'admin.html',
     '/legal': 'legal/privacy.html',

@@ -101,6 +101,15 @@ function createDatabase(filePath = path.join(__dirname, 'kingbot.sqlite')) {
       value TEXT NOT NULL,
       updatedAt TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS marketSignals (
+      id TEXT PRIMARY KEY,
+      symbol TEXT NOT NULL,
+      direction TEXT NOT NULL,
+      confidence INTEGER NOT NULL DEFAULT 0,
+      price REAL NOT NULL DEFAULT 0,
+      createdAt TEXT NOT NULL
+    );
   `);
 
   db.prepare(`INSERT OR IGNORE INTO academyCourses (id, title, level, duration, description, createdAt) VALUES
@@ -227,6 +236,15 @@ function createDatabase(filePath = path.join(__dirname, 'kingbot.sqlite')) {
     },
     async getAdminMetrics() {
       return db.prepare('SELECT metric, value FROM adminMetrics ORDER BY metric').all();
+    },
+    async createSignal({ symbol, direction, confidence, price }) {
+      const id = crypto.randomUUID();
+      const createdAt = new Date().toISOString();
+      db.prepare('INSERT INTO marketSignals (id, symbol, direction, confidence, price, createdAt) VALUES (?, ?, ?, ?, ?, ?)').run(id, symbol, direction, confidence, price, createdAt);
+      return { id, symbol, direction, confidence, price, createdAt };
+    },
+    async getSignals() {
+      return db.prepare('SELECT * FROM marketSignals ORDER BY createdAt DESC LIMIT 10').all();
     },
     async close() {
       db.close();

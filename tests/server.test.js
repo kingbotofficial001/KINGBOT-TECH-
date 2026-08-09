@@ -41,3 +41,15 @@ test('risk profiles and academy enrollments persist for a user', async () => {
 
   await db.close();
 });
+
+test('market signals can be created and fetched', async () => {
+  const dbPath = path.join(__dirname, `tmp-test-${Date.now()}.sqlite`);
+  const db = await createDatabase(dbPath);
+  const created = await db.createSignal({ symbol: 'EUR/USD', direction: 'long', confidence: 81, price: 1.0912 });
+
+  assert.equal(created.symbol, 'EUR/USD');
+  const signals = await db.getSignals();
+  assert.ok(signals.some((signal) => signal.symbol === 'EUR/USD'));
+
+  await db.close();
+});
