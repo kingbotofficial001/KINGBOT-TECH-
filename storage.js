@@ -110,6 +110,20 @@ function createDatabase(filePath = path.join(__dirname, 'kingbot.sqlite')) {
       price REAL NOT NULL DEFAULT 0,
       createdAt TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS tradeHistory (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      symbol TEXT NOT NULL,
+      side TEXT NOT NULL,
+      entryPrice REAL NOT NULL,
+      exitPrice REAL NOT NULL,
+      quantity REAL NOT NULL,
+      pnl REAL NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'closed',
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY(userId) REFERENCES users(id)
+    );
   `);
 
   db.prepare(`INSERT OR IGNORE INTO academyCourses (id, title, level, duration, description, createdAt) VALUES
@@ -245,6 +259,15 @@ function createDatabase(filePath = path.join(__dirname, 'kingbot.sqlite')) {
     },
     async getSignals() {
       return db.prepare('SELECT * FROM marketSignals ORDER BY createdAt DESC LIMIT 10').all();
+    },
+    async createTrade({ userId, symbol, side, entryPrice, exitPrice, quantity, pnl, status }) {
+      const id = crypto.randomUUID();
+      const createdAt = new Date().toISOString();
+      db.prepare('INSERT INTO tradeHistory (id, userId, symbol, side, entryPrice, exitPrice, quantity, pnl, status, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(id, userId, symbol, side, entryPrice, exitPrice, quantity, pnl, status || 'closed', createdAt);
+      return { id, userId, symbol, side, entryPrice, exitPrice, quantity, pnl, status: status || 'closed', createdAt };
+    },
+    async getTrades(userId) {
+      return db.prepare('SELECT * FROM tradeHistory WHERE userId = ? ORDER BY createdAt DESC LIMIT 10').all(userId);
     },
     async close() {
       db.close();

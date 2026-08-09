@@ -1,7 +1,24 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('path');
+const http = require('node:http');
 const { createDatabase } = require('../storage');
+
+function requestJson(port, pathname) {
+  return new Promise((resolve, reject) => {
+    const req = http.request({ hostname: '127.0.0.1', port, path: pathname, method: 'GET' }, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        resolve({ statusCode: res.statusCode, body: data });
+      });
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
 
 test('signup creates an unverified user and verification marks them verified', async () => {
   const dbPath = path.join(__dirname, `tmp-test-${Date.now()}.sqlite`);
@@ -52,4 +69,31 @@ test('market signals can be created and fetched', async () => {
   assert.ok(signals.some((signal) => signal.symbol === 'EUR/USD'));
 
   await db.close();
+});
+
+test('portfolio trades can be created and fetched for a user', async () => {
+  const dbPath = path.join(__dirname, `tmp-test-${Date.now()}.sqlite`);
+  const db = await createDatabase(dbPath);
+  const user = await db.createUser({ name: 'Trade Tester', email: `trades-${Date.now()}@kingbot.tech`, password: 'secret123' });
+  const trade = await db.createTrade({ userId: user.id, symbol: 'BTC/USD', side: 'buy', entryPrice: 62000, exitPrice: 63500, quantity: 0.2, pnl: 300, status: 'closed' });
+
+  assert.equal(trade.symbol, 'BTC/USD');
+  const trades = await db.getTrades(user.id);
+  assert.ok(trades.some((entry) => entry.symbol === 'BTC/USD'));
+
+  await db.close();
+});
+
+test('server exposes portfolio and trades routes without falling back to 404', async () => {
+  const { startServer } = require('../server');
+  const server = startServer(0);
+  await new Promise((resolve) => server.once('listening', resolve));
+
+  const portfolioResponse = await requestJson(server.address().port, '/api/portfolio');
+  const tradesResponse = await requestJson(server.address().port, '/api/trades');
+
+  assert.equal(portfolioResponse.statusCode, 401);
+  assert.equal(tradesResponse.statusCode, 401);
+
+  await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
 });

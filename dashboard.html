@@ -71,6 +71,17 @@
 
       <section class="container dashboard-grid">
         <div class="panel">
+          <h2>Portfolio snapshot</h2>
+          <p id="portfolioSummary">Loading...</p>
+        </div>
+        <div class="panel">
+          <h2>Recent trades</h2>
+          <div id="tradeList">Loading...</div>
+        </div>
+      </section>
+
+      <section class="container dashboard-grid">
+        <div class="panel">
           <h2>AI assistant</h2>
           <input id="aiInput" placeholder="Ask about your strategy or broker" />
           <button class="button" id="aiButton">Send</button>
@@ -124,6 +135,33 @@
         if (res.ok) {
           document.getElementById('brokerInfo').textContent = `${data.connectedBrokers} connected broker(s) • Win rate ${data.winRate}% • Active bots ${data.activeBots}`;
         }
+      };
+
+      const loadPortfolio = async () => {
+        if (!token) return;
+        const res = await fetch('/api/portfolio', { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        if (res.ok) {
+          const { balance, equity, pnl, winRate, tradeCount } = data.portfolio || {};
+          document.getElementById('portfolioSummary').textContent = `Balance: $${balance} • Equity: $${equity} • PnL: $${pnl} • Win rate: ${winRate}% • Trades: ${tradeCount}`;
+        }
+      };
+
+      const loadTrades = async () => {
+        if (!token) return;
+        const res = await fetch('/api/trades', { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        const list = document.getElementById('tradeList');
+        if (!res.ok) return;
+        list.innerHTML = (data.trades || []).length ? data.trades.map((trade) => `
+          <div class="bot-card">
+            <div>
+              <strong>${trade.symbol}</strong>
+              <div class="stat-pill">${trade.side.toUpperCase()} • ${trade.status}</div>
+            </div>
+            <div>${trade.pnl >= 0 ? '+' : ''}${trade.pnl}</div>
+          </div>
+        `).join('') : '<p>No trades recorded yet.</p>';
       };
 
       const loadBots = async () => {
@@ -233,6 +271,8 @@
 
       loadUser();
       loadAnalytics();
+      loadPortfolio();
+      loadTrades();
       loadBots();
     </script>
   </body>

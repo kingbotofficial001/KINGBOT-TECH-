@@ -302,6 +302,55 @@ const handleRequest = async (req, res) => {
     return;
   }
 
+  if (pathname === '/api/portfolio') {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      sendJson(res, 401, { error: 'Unauthorized' });
+      return;
+    }
+    const user = await db.getSessionUser(token);
+    if (!user) {
+      sendJson(res, 401, { error: 'Invalid token' });
+      return;
+    }
+    const trades = await db.getTrades(user.id);
+    const pnl = trades.reduce((sum, trade) => sum + Number(trade.pnl || 0), 0);
+    const winCount = trades.filter((trade) => Number(trade.pnl || 0) > 0).length;
+    const winRate = trades.length ? Math.round((winCount / trades.length) * 100) : 0;
+    sendJson(res, 200, {
+      portfolio: {
+        balance: Number(user.demoBalance || 100),
+        equity: Number(user.demoBalance || 100) + pnl,
+        pnl,
+        winRate,
+        tradeCount: trades.length
+      }
+    });
+    return;
+  }
+
+  if (pathname === '/api/trades') {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      sendJson(res, 401, { error: 'Unauthorized' });
+      return;
+    }
+    const user = await db.getSessionUser(token);
+    if (!user) {
+      sendJson(res, 401, { error: 'Invalid token' });
+      return;
+    }
+    if (req.method === 'POST') {
+      const body = await parseBody(req);
+      const trade = await db.createTrade({ userId: user.id, ...body });
+      sendJson(res, 200, { trade });
+      return;
+    }
+    const trades = await db.getTrades(user.id);
+    sendJson(res, 200, { trades });
+    return;
+  }
+
   if (pathname === '/api/admin/metrics') {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (!token) {
@@ -427,7 +476,7 @@ const handleRequest = async (req, res) => {
   }
 };
 
-function startServer(port) {
+function startServer(port = PORT) {
   const server = http.createServer((req, res) => {
     handleRequest(req, res).catch((error) => {
       console.error('Request failed:', error);
@@ -436,18 +485,27 @@ function startServer(port) {
   });
 
   server.on('error', (error) => {
-    if (error.code === 'EADDRINUSE' && port < 3100) {
+    if (error.code === 'EADDRINUSE' && port < 3100 && process.env.NODE_ENV !== 'test') {
       console.warn(`Port ${port} is busy; trying ${port + 1}`);
       startServer(port + 1);
       return;
     }
     console.error(error);
+    if (process.env.NODE_ENV === 'test') {
+      throw error;
+    }
     process.exit(1);
   });
 
   server.listen(port, () => {
     console.log(`KINGBOT server running on http://127.0.0.1:${port}`);
   });
+
+  return server;
 }
 
-startServer(PORT);
+if (require.main === module) {
+  startServer(PORT);
+}
+
+module.exports = { startServer };
