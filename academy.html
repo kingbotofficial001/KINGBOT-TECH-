@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KINGBOT Academy</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a class="brand" href="./index.html">KINGBOT</a>
+        <nav class="nav-links">
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="./analytics.html">Analytics</a>
+          <a href="./academy.html">Academy</a>
+          <a href="./settings.html">Bot Settings</a>
+        </nav>
+        <a class="button button-ghost" href="./login.html">Access</a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="container page-intro">
+        <span class="eyebrow">AI TRADING EDUCATION</span>
+        <h1>Learn the systems behind KINGBOT</h1>
+        <p>Study SMC, risk control, and AI-assisted execution through structured lessons built for modern traders.</p>
+      </section>
+      <section class="container dashboard-grid">
+        <div class="panel">
+          <h2>Available courses</h2>
+          <div id="courseList"></div>
+        </div>
+        <div class="panel">
+          <h2>Your enrollments</h2>
+          <div id="enrollmentList">Loading...</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span class="year"></span> KINGBOT.</p>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+    <script>
+      const token = localStorage.getItem('kingbotToken');
+      const loadCourses = async () => {
+        const res = await fetch('/api/academy');
+        const data = await res.json();
+        const list = document.getElementById('courseList');
+        list.innerHTML = (data.courses || []).map((course) => `
+          <div class="bot-card">
+            <div>
+              <strong>${course.title}</strong>
+              <div class="stat-pill">${course.level} • ${course.duration}</div>
+              <p>${course.description}</p>
+            </div>
+            <button class="button secondary" data-course-id="${course.id}">Enroll</button>
+          </div>
+        `).join('');
+      };
+
+      const loadEnrollments = async () => {
+        if (!token) {
+          document.getElementById('enrollmentList').innerHTML = '<p>Sign in to enroll and track your learning.</p>';
+          return;
+        }
+        const res = await fetch('/api/academy/enrollments', { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        const list = document.getElementById('enrollmentList');
+        list.innerHTML = (data.enrollments || []).length ? data.enrollments.map((item) => `<p>Enrolled in course ${item.courseId}</p>`).join('') : '<p>No enrollments yet.</p>';
+      };
+
+      document.getElementById('courseList').addEventListener('click', async (event) => {
+        const button = event.target.closest('button[data-course-id]');
+        if (!button || !token) return;
+        const res = await fetch('/api/academy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ courseId: button.dataset.courseId })
+        });
+        if (res.ok) {
+          loadEnrollments();
+        }
+      });
+
+      loadCourses();
+      loadEnrollments();
+    </script>
+  </body>
+</html>

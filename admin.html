@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KINGBOT Admin</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a class="brand" href="./index.html">KINGBOT</a>
+        <nav class="nav-links">
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="./academy.html">Academy</a>
+          <a href="./admin.html">Admin</a>
+        </nav>
+        <a class="button button-ghost" href="./login.html">Access</a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="container page-intro">
+        <span class="eyebrow">OPERATIONS CENTER</span>
+        <h1>Platform oversight for users, bots, and revenue</h1>
+        <p>Monitor the health of KINGBOT with live metrics and operational visibility.</p>
+      </section>
+      <section class="container dashboard-grid">
+        <div class="panel">
+          <h2>Admin metrics</h2>
+          <div id="metricsList">Loading...</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span class="year"></span> KINGBOT.</p>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+    <script>
+      const token = localStorage.getItem('kingbotToken');
+      const loadMetrics = async () => {
+        if (!token) {
+          document.getElementById('metricsList').innerHTML = '<p>Sign in to view admin metrics.</p>';
+          return;
+        }
+        const res = await fetch('/api/admin/metrics', { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        document.getElementById('metricsList').innerHTML = (data.metrics || []).map((metric) => `<p><strong>${metric.metric}</strong>: ${metric.value}</p>`).join('');
+      };
+      loadMetrics();
+    </script>
+  </body>
+</html>

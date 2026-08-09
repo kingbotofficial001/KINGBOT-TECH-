@@ -218,6 +218,90 @@ const handleRequest = async (req, res) => {
     return;
   }
 
+  if (pathname === '/api/risk') {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      sendJson(res, 401, { error: 'Unauthorized' });
+      return;
+    }
+    const user = await db.getSessionUser(token);
+    if (!user) {
+      sendJson(res, 401, { error: 'Invalid token' });
+      return;
+    }
+    if (req.method === 'GET') {
+      const risk = await db.getRiskProfile(user.id);
+      sendJson(res, 200, { risk: risk || { riskMode: 'balanced', riskPercent: 3, maxDrawdown: 10, maxDailyLoss: 500 } });
+      return;
+    }
+    if (req.method === 'POST') {
+      const body = await parseBody(req);
+      const saved = await db.saveRiskProfile(user.id, body);
+      sendJson(res, 200, { risk: saved });
+      return;
+    }
+    sendJson(res, 405, { error: 'Method not allowed' });
+    return;
+  }
+
+  if (pathname === '/api/academy') {
+    if (req.method === 'GET') {
+      const courses = await db.getAcademyCourses();
+      sendJson(res, 200, { courses });
+      return;
+    }
+    if (req.method === 'POST') {
+      const token = req.headers.authorization?.replace('Bearer ', '');
+      if (!token) {
+        sendJson(res, 401, { error: 'Unauthorized' });
+        return;
+      }
+      const user = await db.getSessionUser(token);
+      if (!user) {
+        sendJson(res, 401, { error: 'Invalid token' });
+        return;
+      }
+      const body = await parseBody(req);
+      const enrollment = await db.enrollInCourse(user.id, body.courseId);
+      sendJson(res, 200, { enrollment });
+      return;
+    }
+    sendJson(res, 405, { error: 'Method not allowed' });
+    return;
+  }
+
+  if (pathname === '/api/academy/enrollments') {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      sendJson(res, 401, { error: 'Unauthorized' });
+      return;
+    }
+    const user = await db.getSessionUser(token);
+    if (!user) {
+      sendJson(res, 401, { error: 'Invalid token' });
+      return;
+    }
+    const enrollments = await db.getAcademyEnrollments(user.id);
+    sendJson(res, 200, { enrollments });
+    return;
+  }
+
+  if (pathname === '/api/admin/metrics') {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      sendJson(res, 401, { error: 'Unauthorized' });
+      return;
+    }
+    const user = await db.getSessionUser(token);
+    if (!user) {
+      sendJson(res, 401, { error: 'Invalid token' });
+      return;
+    }
+    const metrics = await db.getAdminMetrics();
+    sendJson(res, 200, { metrics });
+    return;
+  }
+
   if (pathname === '/api/ai') {
     if (req.method !== 'POST') {
       sendJson(res, 405, { error: 'Method not allowed' });
@@ -302,6 +386,8 @@ const handleRequest = async (req, res) => {
     '/signup': 'signup.html',
     '/login': 'login.html',
     '/analytics': 'analytics.html',
+    '/academy': 'academy.html',
+    '/admin': 'admin.html',
     '/legal': 'legal/privacy.html',
     '/legal/privacy': 'legal/privacy.html',
     '/legal/terms': 'legal/terms.html',

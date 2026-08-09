@@ -64,7 +64,56 @@ function createDatabase(filePath = path.join(__dirname, 'kingbot.sqlite')) {
       createdAt TEXT NOT NULL,
       FOREIGN KEY(userId) REFERENCES users(id)
     );
+
+    CREATE TABLE IF NOT EXISTS riskProfiles (
+      id TEXT PRIMARY KEY,
+      userId TEXT UNIQUE NOT NULL,
+      riskMode TEXT NOT NULL DEFAULT 'balanced',
+      riskPercent REAL NOT NULL DEFAULT 3,
+      maxDrawdown REAL NOT NULL DEFAULT 10,
+      maxDailyLoss REAL NOT NULL DEFAULT 500,
+      updatedAt TEXT NOT NULL,
+      FOREIGN KEY(userId) REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS academyCourses (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      level TEXT NOT NULL,
+      duration TEXT NOT NULL,
+      description TEXT NOT NULL,
+      createdAt TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS academyEnrollments (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      courseId TEXT NOT NULL,
+      enrolledAt TEXT NOT NULL,
+      FOREIGN KEY(userId) REFERENCES users(id),
+      FOREIGN KEY(courseId) REFERENCES academyCourses(id),
+      UNIQUE(userId, courseId)
+    );
+
+    CREATE TABLE IF NOT EXISTS adminMetrics (
+      id TEXT PRIMARY KEY,
+      metric TEXT UNIQUE NOT NULL,
+      value TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    );
   `);
+
+  db.prepare(`INSERT OR IGNORE INTO academyCourses (id, title, level, duration, description, createdAt) VALUES
+    ('course-smc', 'SMC Trading Foundations', 'Intermediate', '8 lessons', 'Learn Smart Money Concepts, structure, and execution logic.', ?),
+    ('course-risk', 'Risk Control Mastery', 'Beginner', '6 lessons', 'Build resilient risk rules for live and demo accounts.', ?),
+    ('course-ai', 'AI Trading Signals', 'Advanced', '10 lessons', 'Understand signals, backtesting, and AI-assisted execution.', ?)
+  `).run(new Date().toISOString(), new Date().toISOString(), new Date().toISOString());
+
+  db.prepare(`INSERT OR IGNORE INTO adminMetrics (id, metric, value, updatedAt) VALUES
+    ('users', 'users', '0', ?),
+    ('bots', 'bots', '0', ?),
+    ('revenue', 'revenue', '$0', ?)
+  `).run(new Date().toISOString(), new Date().toISOString(), new Date().toISOString());
 
   return {
     db,
@@ -149,6 +198,35 @@ function createDatabase(filePath = path.join(__dirname, 'kingbot.sqlite')) {
       const createdAt = new Date().toISOString();
       db.prepare('INSERT INTO payments (id, userId, plan, amount, createdAt) VALUES (?, ?, ?, ?, ?)').run(id, userId, plan, amount, createdAt);
       return { plan, amount };
+    },
+    async saveRiskProfile(userId, profile) {
+      const id = crypto.randomUUID();
+      const updatedAt = new Date().toISOString();
+      const existing = db.prepare('SELECT * FROM riskProfiles WHERE userId = ?').get(userId);
+      if (existing) {
+        db.prepare('UPDATE riskProfiles SET riskMode = ?, riskPercent = ?, maxDrawdown = ?, maxDailyLoss = ?, updatedAt = ? WHERE userId = ?').run(profile.riskMode || 'balanced', profile.riskPercent || 3, profile.maxDrawdown || 10, profile.maxDailyLoss || 500, updatedAt, userId);
+        return { ...existing, ...profile, updatedAt };
+      }
+      db.prepare('INSERT INTO riskProfiles (id, userId, riskMode, riskPercent, maxDrawdown, maxDailyLoss, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)').run(id, userId, profile.riskMode || 'balanced', profile.riskPercent || 3, profile.maxDrawdown || 10, profile.maxDailyLoss || 500, updatedAt);
+      return { id, userId, ...profile, updatedAt };
+    },
+    async getRiskProfile(userId) {
+      return db.prepare('SELECT * FROM riskProfiles WHERE userId = ?').get(userId) || null;
+    },
+    async getAcademyCourses() {
+      return db.prepare('SELECT * FROM academyCourses ORDER BY title').all();
+    },
+    async enrollInCourse(userId, courseId) {
+      const id = crypto.randomUUID();
+      const enrolledAt = new Date().toISOString();
+      db.prepare('INSERT OR IGNORE INTO academyEnrollments (id, userId, courseId, enrolledAt) VALUES (?, ?, ?, ?)').run(id, userId, courseId, enrolledAt);
+      return { id, userId, courseId, enrolledAt };
+    },
+    async getAcademyEnrollments(userId) {
+      return db.prepare('SELECT * FROM academyEnrollments WHERE userId = ?').all(userId);
+    },
+    async getAdminMetrics() {
+      return db.prepare('SELECT metric, value FROM adminMetrics ORDER BY metric').all();
     },
     async close() {
       db.close();

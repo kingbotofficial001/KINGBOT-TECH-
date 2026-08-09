@@ -10,11 +10,14 @@ if (form) {
   const market = document.getElementById('market');
   const riskMode = document.getElementById('riskMode');
   const riskPercent = document.getElementById('riskPercent');
+  const maxDrawdown = document.getElementById('maxDrawdown');
+  const maxDailyLoss = document.getElementById('maxDailyLoss');
   const riskValue = document.getElementById('riskValue');
   const previewStrategy = document.getElementById('previewStrategy');
   const previewTimeframe = document.getElementById('previewTimeframe');
   const previewMode = document.getElementById('previewMode');
   const previewRisk = document.getElementById('previewRisk');
+  const saveRiskButton = document.getElementById('riskSaveBtn');
 
   const syncPreview = () => {
     if (!previewStrategy || !previewTimeframe || !previewMode || !previewRisk) return;
@@ -35,9 +38,30 @@ if (form) {
     riskPercent?.addEventListener(eventName, syncPreview);
   });
 
+  const saveRiskProfile = async () => {
+    const token = localStorage.getItem('kingbotToken');
+    if (!token) return;
+    const payload = {
+      riskMode: riskMode?.value || 'balanced',
+      riskPercent: Number(riskPercent?.value || 3),
+      maxDrawdown: Number(maxDrawdown?.value || 10),
+      maxDailyLoss: Number(maxDailyLoss?.value || 500)
+    };
+    const response = await fetch('/api/risk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(payload)
+    });
+    if (response.ok) {
+      const result = await response.json();
+      if (previewRisk) previewRisk.textContent = `${result.risk?.riskPercent || 3}%`;
+    }
+  };
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     syncPreview();
+    saveRiskProfile();
     const submitButton = form.querySelector('button');
     if (submitButton) {
       submitButton.textContent = 'Settings saved';
@@ -49,5 +73,6 @@ if (form) {
     }
   });
 
+  saveRiskButton?.addEventListener('click', saveRiskProfile);
   syncPreview();
 }
