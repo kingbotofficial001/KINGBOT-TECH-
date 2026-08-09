@@ -293,24 +293,29 @@ const handleRequest = async (req, res) => {
   }
 
   const routeMap = {
-    '/': '/index.html',
-    '/pricing': '/pricing.html',
-    '/strategies': '/strategies.html',
-    '/settings': '/settings.html',
-    '/brokers': '/brokers.html',
-    '/dashboard': '/dashboard.html',
-    '/signup': '/signup.html',
-    '/login': '/login.html',
-    '/analytics': '/analytics.html',
+    '/': 'index.html',
+    '/pricing': 'pricing.html',
+    '/strategies': 'strategies.html',
+    '/settings': 'settings.html',
+    '/brokers': 'brokers.html',
+    '/dashboard': 'dashboard.html',
+    '/signup': 'signup.html',
+    '/login': 'login.html',
+    '/analytics': 'analytics.html',
+    '/legal': 'legal/privacy.html',
+    '/legal/': 'legal/privacy.html',
+    '/legal/privacy': 'legal/privacy.html',
+    '/legal/terms': 'legal/terms.html',
+    '/legal/risk': 'legal/risk.html',
   };
 
-  const filePath = routeMap[pathname] || pathname;
-  const safePath = path.normalize(filePath).replace(/^\.(?:\/|$)/, '');
-  const absolutePath = path.join(__dirname, safePath);
-  if (!absolutePath.startsWith(__dirname)) {
+  const requestedPath = routeMap[pathname] || pathname.replace(/^[/\\]+/, '');
+  const safePath = path.normalize(requestedPath);
+  if (path.isAbsolute(safePath) || safePath.split(path.sep).some((segment) => segment === '..')) {
     sendJson(res, 403, { error: 'Forbidden' });
     return;
   }
+  const absolutePath = path.join(__dirname, safePath);
 
   if (fs.existsSync(absolutePath) && fs.statSync(absolutePath).isFile()) {
     serveFile(res, absolutePath, getContentType(absolutePath));
