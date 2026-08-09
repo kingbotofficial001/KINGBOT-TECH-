@@ -7,6 +7,7 @@ node_modules/
 # SQLite runtime files
 kingbot.sqlite-wal
 kingbot.sqlite-shm
+/tests/tmp-test-*.sqlite
 
 # Logs
 npm-debug.log*
