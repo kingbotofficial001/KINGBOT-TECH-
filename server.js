@@ -303,13 +303,13 @@ const handleRequest = async (req, res) => {
     '/login': 'login.html',
     '/analytics': 'analytics.html',
     '/legal': 'legal/privacy.html',
-    '/legal/': 'legal/privacy.html',
     '/legal/privacy': 'legal/privacy.html',
     '/legal/terms': 'legal/terms.html',
     '/legal/risk': 'legal/risk.html',
   };
 
-  const requestedPath = routeMap[pathname] || pathname.replace(/^[/\\]+/, '');
+  const normalizedPath = pathname.endsWith('/') && pathname !== '/' ? pathname.slice(0, -1) : pathname;
+  const requestedPath = routeMap[normalizedPath] || normalizedPath.replace(/^[/\\]+/, '');
   const safePath = path.normalize(requestedPath);
   if (path.isAbsolute(safePath) || safePath.split(path.sep).some((segment) => segment === '..')) {
     sendJson(res, 403, { error: 'Forbidden' });
