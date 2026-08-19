@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KING BOT Pricing</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a class="brand brand-neural" href="/">
+          <img src="/assets/neural-brain-logo.png" alt="" class="nav-brain" width="36" height="36" />
+          <span>KINGBOT AI</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primaryNav">
+          <span></span>
+        </button>
+        <nav class="nav-links" id="primaryNav" aria-label="Main navigation">
+          <a href="/index">Home</a>
+          <a href="/dashboard">Dashboard</a>
+          <a href="/analytics">Analytics</a>
+          <a href="/strategies">Strategies</a>
+          <a href="/settings">Bot Settings</a>
+          <a href="/brokers">Broker Connect</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/legal/privacy">Legal</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="button-ghost" href="/signup" id="authAction" data-guest-label="Create Account" data-guest-href="/signup">Create Account</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="container page-intro reveal">
+        <span class="eyebrow">PRICING</span>
+        <h1>Flexible plans for demo traders, live operators, and full-scale institutions.</h1>
+        <p>
+          New users receive a free demo bot with a $100 virtual balance. Upgrade to unlock live broker
+          execution, MT5 connectivity, advanced analytics, and AI support.
+        </p>
+      </section>
+
+      <section class="container pricing-grid reveal-stagger">
+        <article class="pricing-card">
+          <h3>Free</h3>
+          <span class="price">$0</span>
+          <p>Perfect for learning, testing strategies, and getting comfortable with the platform.</p>
+          <ul class="list">
+            <li>1 demo bot</li>
+            <li>$100 virtual balance</li>
+            <li>No broker connection</li>
+            <li>Basic strategy templates</li>
+          </ul>
+          <div class="card-actions">
+            <a class="button button-block secondary" href="/signup">Get started free</a>
+          </div>
+        </article>
+        <article class="pricing-card featured">
+          <h3>Starter</h3>
+          <span class="price">$100</span>
+          <p>Unlock live execution and premium strategy control for serious traders.</p>
+          <ul class="list">
+            <li>1 live broker connection</li>
+            <li>MT5 or API support</li>
+            <li>Full strategy library</li>
+            <li>Live charting and analytics</li>
+          </ul>
+          <div class="card-actions">
+            <a class="button button-block" href="/settings?plan=starter#paymentForm">Choose Starter</a>
+          </div>
+        </article>
+        <article class="pricing-card">
+          <h3>Professional</h3>
+          <span class="price">$450</span>
+          <p>For multi-bot operators and advanced traders who want deeper automation.</p>
+          <ul class="list">
+            <li>3 broker connections</li>
+            <li>Advanced execution controls</li>
+            <li>AI-assisted insights</li>
+            <li>Risk and performance analytics</li>
+          </ul>
+          <div class="card-actions">
+            <a class="button button-block secondary" href="/settings?plan=professional#paymentForm">Choose Professional</a>
+          </div>
+        </article>
+        <article class="pricing-card">
+          <h3>Enterprise</h3>
+          <span class="price">$1,400</span>
+          <p>Institutional-grade infrastructure with custom support and unlimited scale.</p>
+          <ul class="list">
+            <li>Unlimited bots</li>
+            <li>Unlimited broker connections</li>
+            <li>Dedicated support</li>
+            <li>White-label and custom compliance</li>
+          </ul>
+          <div class="card-actions">
+            <a class="button button-block secondary" href="/settings?plan=enterprise#paymentForm">Choose Enterprise</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="container panel payment-card reveal">
+        <div>
+          <span class="eyebrow">PAYMENT OPTIONS</span>
+          <h2>Manual payment available for approved accounts.</h2>
+          <p>Use the manual payment route for invoice or bank transfer support. Contact us directly on the number below.</p>
+        </div>
+        <div class="payment-details">
+          <p><strong>Manual payment:</strong> +27 748 275 015</p>
+          <p><strong>Email:</strong> billing@kingbot.tech</p>
+          <p><strong>Accepted:</strong> bank transfer, invoice, and custom billing arrangements</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span class="year"></span> KING BOT.</p>
+        <div class="footer-links">
+          <a href="/legal/privacy">Privacy</a>
+          <a href="/legal/terms">Terms</a>
+          <a href="/legal/risk">Risk Disclosure</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KINGBOT AI Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Initializing neural systems</p>
+    </div>
+
+    <div id="appShell">
+      <div data-app-content>
+      <section class="container page-intro reveal">
+        <span class="eyebrow">SETTINGS</span>
+        <h1>Profile &amp; strategy controls</h1>
+        <p>Update your account details and bot configuration. Google profile photo appears automatically when you sign in with Google.</p>
+      </section>
+
+      <section class="container settings-grid reveal-stagger">
+        <form class="panel settings-form" id="profileForm">
+          <h2>Profile</h2>
+          <div class="profile-preview" id="profilePreview">
+            <div class="profile-av-lg" id="settingsAvatar">U</div>
+            <div>
+              <strong id="settingsDisplayName">Trader</strong>
+              <div style="color:var(--muted);font-size:0.85rem;" id="settingsDisplayEmail">—</div>
+              <div class="stat-pill" id="settingsPlanPill" style="margin-top:0.35rem;">FREE</div>
+            </div>
+          </div>
+          <label>
+            Display name
+            <input id="profileNameInput" name="name" type="text" required minlength="2" autocomplete="name" />
+          </label>
+          <label>
+            Email
+            <input id="profileEmailInput" name="email" type="email" required autocomplete="email" />
+          </label>
+          <button class="button button-block" type="submit">Save profile</button>
+        </form>
+
+        <form class="panel settings-form" id="strategy-form">
+          <h2>Strategy settings</h2>
+          <label>
+            Strategy template
+            <select id="strategyTemplate">
+              <option>Trend Breakout</option>
+              <option>Mean Reversion</option>
+              <option>Scalp Momentum</option>
+              <option>Grid Recovery</option>
+              <option>KINGBOT SMC AI</option>
+            </select>
+          </label>
+          <label>
+            Timeframe
+            <select id="timeframe">
+              <option>1m</option>
+              <option>5m</option>
+              <option selected>15m</option>
+              <option>1h</option>
+              <option>4h</option>
+            </select>
+          </label>
+          <label>
+            Market
+            <select id="market">
+              <option>Forex</option>
+              <option>Crypto</option>
+              <option>Indices</option>
+              <option>Commodities</option>
+            </select>
+          </label>
+          <label>
+            Mode
+            <select id="riskMode">
+              <option>Conservative</option>
+              <option selected>Normal</option>
+              <option>Aggressive</option>
+            </select>
+          </label>
+          <label>
+            Risk percentage
+            <input id="riskPercent" type="range" min="1" max="10" value="3" />
+            <span id="riskValue">3%</span>
+          </label>
+          <label>
+            Auto take profit
+            <input id="takeProfit" type="checkbox" checked />
+          </label>
+          <label>
+            News filter
+            <input id="newsFilter" type="checkbox" checked />
+          </label>
+          <button class="button button-block" type="submit">Save settings</button>
+        </form>
+      </section>
+
+      <section class="container" style="margin-top:1.2rem;">
+        <aside class="panel preview-card reveal">
+          <h2>Live preview</h2>
+          <div class="preview-row"><span>Demo balance</span><strong>$100.00</strong></div>
+          <div class="preview-row"><span>Strategy</span><strong id="previewStrategy">Trend Breakout</strong></div>
+          <div class="preview-row"><span>Timeframe</span><strong id="previewTimeframe">15m</strong></div>
+          <div class="preview-row"><span>Mode</span><strong id="previewMode">Normal</strong></div>
+          <div class="preview-row"><span>Risk</span><strong id="previewRisk">3%</strong></div>
+          <div class="preview-row"><span>Status</span><strong class="status-text">Demo ready</strong></div>
+        </aside>
+      </section>
+
+      <section class="container widgets-row reveal-stagger" id="paymentForm" style="margin-top: 1.2rem;">
+        <div class="widget-panel">
+          <h3>Starter <span class="stat-pill">$100</span></h3>
+          <p style="color: var(--muted); font-size: 0.85rem;">Live execution, MT5/API, SMC engine.</p>
+          <button class="button button-block plan-btn" data-plan="starter" type="button">Choose Starter</button>
+        </div>
+        <div class="widget-panel">
+          <h3>Professional <span class="stat-pill">$450</span></h3>
+          <p style="color: var(--muted); font-size: 0.85rem;">Multi-broker, advanced analytics, priority support.</p>
+          <button class="button button-block plan-btn" data-plan="professional" type="button">Choose Professional</button>
+        </div>
+        <div class="widget-panel">
+          <h3>Enterprise <span class="stat-pill">$1,400</span></h3>
+          <p style="color: var(--muted); font-size: 0.85rem;">Unlimited bots, custom neural models.</p>
+          <button class="button button-block plan-btn" data-plan="enterprise" type="button">Choose Enterprise</button>
+        </div>
+      </section>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/shell.js"></script>
+    <script src="/js/pages/settings.js"></script>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KING BOT Trading Bots</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Initializing neural systems</p>
+    </div>
+
+    <div id="appShell">
+      <div data-app-content>
+        <section class="page-intro reveal">
+          <span class="eyebrow">TRADING BOT FLEET</span>
+          <h1>Your automated bots, ready to command.</h1>
+          <p>Launch new bots, toggle them on or off, and monitor which ones are actively working the markets.</p>
+        </section>
+
+        <section class="widget-panel reveal" style="margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
+          <div>
+            <h3 style="margin:0;">Deploy a new bot</h3>
+            <p style="margin: 0.3rem 0 0; color: var(--muted); font-size: 0.85rem;">Each new bot starts on the SMC AI multi-asset strategy in demo mode.</p>
+          </div>
+          <button class="button" id="createBotBtn" type="button">Create bot</button>
+        </section>
+
+        <section class="widget-panel reveal">
+          <h3>Active fleet</h3>
+          <div id="botList"><p class="skeleton" style="height: 160px;"></p></div>
+        </section>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/shell.js"></script>
+    <script src="/js/pages/trading-bots.js"></script>
+  </body>
+</html>

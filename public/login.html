@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <title>KING BOT Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-auth-page="login">
+    <div class="auth-wrap">
+      <div class="auth-card fade-in">
+        <div class="auth-crown" aria-hidden="true"><img src="/assets/neural-brain-logo.png" alt="" width="76" height="76" style="filter:drop-shadow(0 0 12px rgba(91,140,255,0.55));background:transparent;" /></div>
+        <h1>Welcome back</h1>
+        <p class="auth-sub">Sign in to command your King Bot trading desk.</p>
+
+        <form id="loginForm" novalidate>
+          <div class="field">
+            <label for="loginEmail">Email</label>
+            <input id="loginEmail" name="email" type="email" required autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" name="password" type="password" required autocomplete="current-password" />
+            <button type="button" class="pw-toggle" data-for="loginPassword" aria-label="Show password"></button>
+          </div>
+          <button class="button button-block" type="submit">Login</button>
+        </form>
+
+        <div class="auth-divider">or</div>
+        <div class="google-shell"><div id="googleBtn"></div></div>
+
+        <p class="auth-switch">New to King Bot? <a href="/signup">Create an account</a></p>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>&copy; <span class="year"></span> KING BOT.</p>
+        <div class="footer-links">
+          <a href="/legal/privacy">Privacy</a>
+          <a href="/legal/terms">Terms</a>
+          <a href="/legal/risk">Risk Disclosure</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/auth.js"></script>
+  </body>
+</html>

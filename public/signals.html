@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KING BOT Signals</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Initializing neural systems</p>
+    </div>
+
+    <div id="appShell">
+      <div data-app-content>
+        <section class="page-intro reveal">
+          <span class="eyebrow">VIP SIGNALS</span>
+          <h1>High-confidence AI signals, delivered in real time.</h1>
+          <p>Every signal includes entry, stop-loss, take-profit, and the AI's confidence rating.</p>
+        </section>
+
+        <section class="widgets-row reveal-stagger" id="signalGrid"></section>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/shell.js"></script>
+    <script src="/js/pages/signals.js"></script>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KING BOT Trade History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Initializing neural systems</p>
+    </div>
+
+    <div id="appShell">
+      <div data-app-content>
+        <section class="page-intro reveal">
+          <span class="eyebrow">TRADE HISTORY</span>
+          <h1>Every closed trade, fully transparent.</h1>
+          <p>Review your bot's execution history including entry, exit, and realized profit or loss.</p>
+        </section>
+
+        <section class="widget-panel reveal" style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; min-width: 640px;">
+            <thead>
+              <tr style="text-align:left; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em;">
+                <th style="padding: 0.6rem 0.4rem;">Symbol</th>
+                <th style="padding: 0.6rem 0.4rem;">Side</th>
+                <th style="padding: 0.6rem 0.4rem;">Entry</th>
+                <th style="padding: 0.6rem 0.4rem;">Exit</th>
+                <th style="padding: 0.6rem 0.4rem;">Closed</th>
+                <th style="padding: 0.6rem 0.4rem;">P/L</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </section>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/shell.js"></script>
+    <script src="/js/pages/trade-history.js"></script>
+  </body>
+</html>

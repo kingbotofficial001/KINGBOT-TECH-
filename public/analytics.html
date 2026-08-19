@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KING BOT Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Initializing neural systems</p>
+    </div>
+
+    <div id="appShell">
+      <div data-app-content>
+      <section class="container page-intro reveal">
+        <span class="eyebrow">ADVANCED ANALYTICS</span>
+        <h1>Clear intelligence for every account and strategy.</h1>
+        <p>Monitor balance, win rate, profitability, and connected brokers from a premium analytics cockpit.</p>
+      </section>
+
+      <section class="container feature-grid reveal-stagger">
+        <article class="feature-card"><h3>Balance</h3><p id="balanceValue" class="skeleton">$100</p></article>
+        <article class="feature-card"><h3>Win rate</h3><p id="winRateValue" class="skeleton">94.2%</p></article>
+        <article class="feature-card"><h3>Monthly PnL</h3><p id="pnlValue" class="skeleton">+$14,280</p></article>
+        <article class="feature-card"><h3>Brokers connected</h3><p id="brokerCount" class="skeleton">0</p></article>
+      </section>
+
+      <section class="container dashboard-grid reveal-stagger">
+        <div class="panel">
+          <h2>Performance chart</h2>
+          <div class="mini-chart" style="height: 220px; margin-top: 0.5rem;"><div class="trend-line"></div><div class="trend-line two"></div></div>
+        </div>
+        <div class="panel">
+          <h2>Live market watch</h2>
+          <div id="marketList" class="skeleton" style="height: 64px;"></div>
+        </div>
+      </section>
+    
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/shell.js"></script>
+    <script src="/js/pages/analytics.js"></script>
+  </body>
+</html>

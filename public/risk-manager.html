@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KING BOT Risk Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Initializing neural systems</p>
+    </div>
+
+    <div id="appShell">
+      <div data-app-content>
+        <section class="page-intro reveal">
+          <span class="eyebrow">RISK MANAGER</span>
+          <h1>Guardrails that protect your account, automatically.</h1>
+          <p>Set the limits King Bot must respect before it opens or holds a position.</p>
+        </section>
+
+        <section class="settings-grid reveal-stagger">
+          <form class="panel settings-form" id="riskForm">
+            <h2>Risk limits</h2>
+            <label>
+              Max risk per trade
+              <input id="riskPerTrade" type="range" min="0.5" max="10" step="0.5" value="2" />
+              <span id="riskPerTradeValue">2%</span>
+            </label>
+            <label>
+              Max daily loss
+              <input id="maxDailyLoss" type="range" min="1" max="20" value="5" />
+              <span id="maxDailyLossValue">5%</span>
+            </label>
+            <label>
+              Max concurrent trades
+              <input id="maxTrades" type="range" min="1" max="20" value="6" />
+              <span id="maxTradesValue">6</span>
+            </label>
+            <label>
+              Auto-pause on max drawdown
+              <input id="autoPause" type="checkbox" checked />
+            </label>
+            <button class="button button-block" type="submit">Save risk settings</button>
+          </form>
+
+          <aside class="panel preview-card">
+            <h2>Current guardrails</h2>
+            <div class="preview-row"><span>Per trade risk</span><strong id="prevRisk">2%</strong></div>
+            <div class="preview-row"><span>Max daily loss</span><strong id="prevDaily">5%</strong></div>
+            <div class="preview-row"><span>Max open trades</span><strong id="prevTrades">6</strong></div>
+            <div class="preview-row"><span>Auto-pause</span><strong id="prevPause">Enabled</strong></div>
+          </aside>
+        </section>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/shell.js"></script>
+    <script src="/js/pages/risk-manager.js"></script>
+  </body>
+</html>

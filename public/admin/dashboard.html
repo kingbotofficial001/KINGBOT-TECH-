@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KINGBOT AI Admin Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin-cyber.css" />
+  </head>
+  <body class="admin-body">
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Loading Admin Console</p>
+    </div>
+
+    <div id="appShell" class="admin-shell">
+      <div class="sidebar-scrim" id="adminSidebarScrim"></div>
+      <aside class="app-sidebar admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+          <img src="/assets/neural-brain-logo.png" alt="KINGBOT AI" class="sidebar-brain-logo" width="36" height="36" />
+          <div class="brand-text">
+            <strong class="brand-mark">KINGBOT AI</strong>
+            <span>Admin Console</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav" id="adminNav">
+          <a href="#overview" class="admin-nav-link active" data-section="overview"><span class="nav-ic">▦</span>Overview</a>
+          <a href="#users" class="admin-nav-link" data-section="users"><span class="nav-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>Users</a>
+          <a href="#subscriptions" class="admin-nav-link" data-section="subscriptions"><span class="nav-ic">◆</span>Subscriptions</a>
+          <a href="#bots" class="admin-nav-link" data-section="bots"><span class="nav-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span>Bots</a>
+          <a href="#brokers" class="admin-nav-link" data-section="brokers"><span class="nav-ic">◉</span>Brokers</a>
+          <a href="#system" class="admin-nav-link" data-section="system"><span class="nav-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 10-7 10-7-10z"/></svg></span>System</a>
+          <a href="/"><span class="nav-ic">⌂</span>Back to site</a>
+        </nav>
+        <div class="sidebar-promo">
+          <img src="/assets/neural-brain-logo.png" alt="" class="sidebar-brain-logo" width="32" height="32" style="margin:0 auto 0.4rem;" />
+          <strong class="brand-mark">RESTRICTED</strong>
+          <p>Signed in as admin.</p>
+          <button class="button button-block button-sm" id="adminLogoutBtn" type="button">Logout</button>
+        </div>
+      </aside>
+
+      <div class="app-main">
+        <div class="app-topbar">
+          <button class="sidebar-toggle" id="adminSidebarToggle" type="button" aria-label="Toggle menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div style="flex:1;"></div>
+          <div class="topbar-actions">
+            <span class="stat-pill">ADMIN</span>
+          </div>
+        </div>
+
+        <div class="app-content admin-content">
+
+          <section class="admin-section is-active" id="overview" data-section-panel="overview">
+            <div class="page-intro">
+              <span class="eyebrow">ADMIN OVERVIEW</span>
+              <h1>Platform at a glance</h1>
+              <p>Live counts pulled directly from the database.</p>
+            </div>
+            <div class="stat-grid admin-stats">
+              <article class="stat-card"><div class="st-label">Total Users</div><div class="st-value" id="statTotalUsers">0</div></article>
+              <article class="stat-card"><div class="st-label">Total Bots</div><div class="st-value" id="statTotalBots">0</div></article>
+              <article class="stat-card"><div class="st-label">Active Bots</div><div class="st-value" id="statActiveBots">0</div></article>
+              <article class="stat-card"><div class="st-label">Broker Connections</div><div class="st-value" id="statTotalBrokers">0</div></article>
+            </div>
+          </section>
+
+          <section class="admin-section" id="users" data-section-panel="users">
+            <div class="page-intro">
+              <span class="eyebrow">USERS</span>
+              <h1>All registered users</h1>
+              <p>Name, email, plan, mode, verification and join date.</p>
+            </div>
+            <div class="widget-panel table-panel">
+              <div class="table-toolbar">
+                <input type="search" id="userSearch" placeholder="Search name or email…" class="admin-search" />
+                <span class="muted" id="userCountLabel">0 users</span>
+              </div>
+              <div class="table-scroll">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Email</th>
+                      <th>Plan</th>
+                      <th>Mode</th>
+                      <th>Status</th>
+                      <th>Joined</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="admin-section" id="subscriptions" data-section-panel="subscriptions">
+            <div class="page-intro">
+              <span class="eyebrow">SUBSCRIPTIONS</span>
+              <h1>Plans &amp; billing snapshot</h1>
+            </div>
+            <div class="stat-grid admin-stats" id="planStats">
+              <article class="stat-card"><div class="st-label">Free</div><div class="st-value" id="planFree">0</div></article>
+              <article class="stat-card"><div class="st-label">Starter</div><div class="st-value" id="planStarter">0</div></article>
+              <article class="stat-card"><div class="st-label">Professional</div><div class="st-value" id="planPro">0</div></article>
+              <article class="stat-card"><div class="st-label">Enterprise</div><div class="st-value" id="planEnt">0</div></article>
+            </div>
+            <div class="widget-panel table-panel" style="margin-top:1rem;">
+              <div class="table-scroll">
+                <table class="admin-table">
+                  <thead><tr><th>User</th><th>Email</th><th>Plan</th><th>Joined</th></tr></thead>
+                  <tbody id="subsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="admin-section" id="bots" data-section-panel="bots">
+            <div class="page-intro">
+              <span class="eyebrow">BOTS</span>
+              <h1>Bot activity</h1>
+            </div>
+            <div class="stat-grid admin-stats">
+              <article class="stat-card"><div class="st-label">Total Bots</div><div class="st-value" id="botsTotal">0</div></article>
+              <article class="stat-card"><div class="st-label">Active</div><div class="st-value" id="botsActive">0</div></article>
+            </div>
+          </section>
+
+          <section class="admin-section" id="brokers" data-section-panel="brokers">
+            <div class="page-intro">
+              <span class="eyebrow">BROKERS</span>
+              <h1>Broker connections</h1>
+            </div>
+            <div class="stat-grid admin-stats">
+              <article class="stat-card"><div class="st-label">Connections</div><div class="st-value" id="brokerTotal">0</div></article>
+            </div>
+          </section>
+
+          <section class="admin-section" id="system" data-section-panel="system">
+            <div class="page-intro">
+              <span class="eyebrow">SYSTEM</span>
+              <h1>Platform health</h1>
+            </div>
+            <div class="widget-panel">
+              <div class="kv-row"><span class="kv-label">API</span><strong class="ok">Online</strong></div>
+              <div class="kv-row"><span class="kv-label">Database</span><strong id="dbStatus">Checking…</strong></div>
+              <div class="kv-row"><span class="kv-label">Admin session</span><strong class="ok">Active</strong></div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/pages/admin-dashboard.js"></script>
+  </body>
+</html>

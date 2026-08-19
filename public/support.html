@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KING BOT Support</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Initializing neural systems</p>
+    </div>
+
+    <div id="appShell">
+      <div data-app-content>
+        <section class="page-intro reveal">
+          <span class="eyebrow">SUPPORT</span>
+          <h1>We're here whenever you need us.</h1>
+          <p>Browse common questions or reach the King Bot support desk directly.</p>
+        </section>
+
+        <section class="widgets-row reveal-stagger">
+          <div class="widget-panel">
+            <h3>How do I switch to live trading?</h3>
+            <p style="color: var(--muted); font-size: 0.85rem;">Upgrade to any paid plan from the Subscriptions page, then toggle Live mode from your dashboard.</p>
+          </div>
+          <div class="widget-panel">
+            <h3>Can I connect my own MT5 account?</h3>
+            <p style="color: var(--muted); font-size: 0.85rem;">Yes. Head to MT5 Accounts and connect your broker credentials once you're on a paid plan.</p>
+          </div>
+          <div class="widget-panel">
+            <h3>Is the demo balance real money?</h3>
+            <p style="color: var(--muted); font-size: 0.85rem;">No. Demo mode uses a simulated $100 balance so you can test strategies risk-free.</p>
+          </div>
+        </section>
+
+        <section class="widget-panel reveal" style="margin-top: 1.2rem;">
+          <h3>Contact support</h3>
+          <form id="supportForm">
+            <div class="field">
+              <label for="supportSubject">Subject</label>
+              <input id="supportSubject" name="subject" required />
+            </div>
+            <div class="field">
+              <label for="supportMessage">Message</label>
+              <textarea id="supportMessage" name="message" rows="4" required style="background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 0.78rem 0.9rem; color: var(--text); font-family: inherit; font-size: 0.94rem; resize: vertical;"></textarea>
+            </div>
+            <button class="button button-block" type="submit">Send message</button>
+          </form>
+        </section>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/shell.js"></script>
+    <script src="/js/pages/support.js"></script>
+  </body>
+</html>

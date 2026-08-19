@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KINGBOT AI Admin Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="auth-wrap">
+      <div class="auth-card fade-in">
+        <div class="auth-crown" aria-hidden="true"><img src="/assets/neural-brain-logo.png" alt="" width="76" height="76" style="filter:drop-shadow(0 0 12px rgba(91,140,255,0.55));background:transparent;" /></div>
+        <h1>Admin Access</h1>
+        <p class="auth-sub">Restricted to the King Bot operations team.</p>
+
+        <form id="adminLoginForm" novalidate>
+          <div class="field">
+            <label for="adminEmail">Admin email</label>
+            <input id="adminEmail" name="email" type="email" required autocomplete="username" />
+          </div>
+          <div class="field">
+            <label for="adminPassword">Password</label>
+            <input id="adminPassword" name="password" type="password" required autocomplete="current-password" />
+            <button type="button" class="pw-toggle" data-for="adminPassword">Show</button>
+          </div>
+          <button class="button button-block" type="submit">Enter admin dashboard</button>
+        </form>
+
+        <p class="auth-switch"><a href="/index">Back to KINGBOT AI</a></p>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/pages/admin-login.js"></script>
+  </body>
+</html>

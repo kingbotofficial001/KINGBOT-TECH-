@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KING BOT Strategies</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Initializing neural systems</p>
+    </div>
+
+    <div id="appShell">
+      <div data-app-content>
+      <section class="container page-intro reveal">
+        <span class="eyebrow">STRATEGY LAB</span>
+        <h1>Deploy elite strategies across forex, crypto, stocks, and commodities.</h1>
+        <p>
+          Select from trend-following, breakout, mean reversion, and risk-managed templates with
+          customizable timeframes and execution modes.
+        </p>
+      </section>
+
+      <section class="container strategy-grid reveal-stagger">
+        <article class="strategy-card">
+          <h3>Trend Breakout</h3>
+          <p>Best for strong directional moves. Designed for 15m to 4h timeframes and normal or aggressive modes.</p>
+          <ul class="list">
+            <li>Adaptive stop-loss</li>
+            <li>Momentum confirmation</li>
+            <li>Auto trailing</li>
+          </ul>
+          <div class="card-actions">
+            <a class="button button-block secondary" href="/settings?template=Trend%20Breakout&timeframe=1h">Configure this strategy</a>
+          </div>
+        </article>
+        <article class="strategy-card">
+          <h3>Mean Reversion</h3>
+          <p>Executes when price swings away from equilibrium and re-enters with tight risk controls.</p>
+          <ul class="list">
+            <li>Range-aware entries</li>
+            <li>Conservative exits</li>
+            <li>News filtering</li>
+          </ul>
+          <div class="card-actions">
+            <a class="button button-block secondary" href="/settings?template=Mean%20Reversion&timeframe=15m">Configure this strategy</a>
+          </div>
+        </article>
+        <article class="strategy-card">
+          <h3>Scalp Momentum</h3>
+          <p>Optimized for fast execution on lower timeframes and active market sessions.</p>
+          <ul class="list">
+            <li>Rapid entries</li>
+            <li>Low-latency routing</li>
+            <li>Dynamic lot sizing</li>
+          </ul>
+          <div class="card-actions">
+            <a class="button button-block secondary" href="/settings?template=Scalp%20Momentum&timeframe=1m">Configure this strategy</a>
+          </div>
+        </article>
+        <article class="strategy-card">
+          <h3>Grid Recovery</h3>
+          <p>Useful for volatile environments where the system scales into market ranges responsibly.</p>
+          <ul class="list">
+            <li>Risk-based grid spacing</li>
+            <li>Volatility filters</li>
+            <li>Max drawdown lockout</li>
+          </ul>
+          <div class="card-actions">
+            <a class="button button-block secondary" href="/settings?template=Grid%20Recovery&timeframe=4h">Configure this strategy</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="container panel reveal">
+        <div class="split-grid">
+          <div>
+            <span class="eyebrow">MODE CONTROL</span>
+            <h2>Switch between normal, conservative, and aggressive execution with one click.</h2>
+            <p>Each system supports market selection, timeframe control, and account-specific risk profiles.</p>
+          </div>
+          <div>
+            <ul class="list big-list">
+              <li>Normal Mode: balanced entries with standard risk management.</li>
+              <li>Conservative Mode: tighter stops and lower exposure.</li>
+              <li>Aggressive Mode: faster entries with wider profit targets.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/shell.js"></script>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/assets/brain-icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>KING BOT Affiliates</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader">
+      <div class="sphere-loader" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <p>Initializing neural systems</p>
+    </div>
+
+    <div id="appShell">
+      <div data-app-content>
+        <section class="page-intro reveal">
+          <span class="eyebrow">AFFILIATE PROGRAM</span>
+          <h1>Know traders? Invite them and earn while they trade.</h1>
+          <p>Share your personal link, and every trader who joins through it earns you recurring commission on their subscription.</p>
+        </section>
+
+        <section class="widget-panel reveal" style="margin-bottom: 1.2rem;">
+          <h3>Your referral link</h3>
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <input id="refLink" readonly style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 0.9rem; color: var(--text);" />
+            <button class="button" id="copyRefBtn" type="button">Copy link</button>
+          </div>
+        </section>
+
+        <section class="widgets-row reveal-stagger" style="margin-bottom: 1.2rem;">
+          <div class="widget-panel">
+            <h3>Total referrals</h3>
+            <p class="ref-stat" id="refCount">0</p>
+            <p style="color: var(--muted); font-size: 0.85rem;">Traders who joined through your link.</p>
+          </div>
+          <div class="widget-panel">
+            <h3>Commission earned</h3>
+            <p class="ref-stat" id="refEarnings">$0.00</p>
+            <p style="color: var(--muted); font-size: 0.85rem;">Credited when a referral upgrades to a paid plan.</p>
+          </div>
+          <div class="widget-panel">
+            <h3>Current tier</h3>
+            <p class="ref-stat" id="refTier" style="font-size: 1.2rem;">Starter tier (20%)</p>
+            <p style="color: var(--muted); font-size: 0.85rem;" id="refNextTier"></p>
+          </div>
+        </section>
+
+        <section class="widget-panel reveal" style="margin-bottom: 1.2rem;">
+          <h3>Your referrals</h3>
+          <div id="refList"><p style="color:var(--muted);font-size:0.88rem;">Loading...</p></div>
+        </section>
+
+        <section class="widgets-row reveal-stagger">
+          <div class="widget-panel">
+            <h3>Starter tier</h3>
+            <p style="color: var(--muted); font-size: 0.85rem;">20% recurring commission on every referral's subscription.</p>
+          </div>
+          <div class="widget-panel">
+            <h3>Elite tier</h3>
+            <p style="color: var(--muted); font-size: 0.85rem;">30% recurring commission once you refer 10 or more active traders.</p>
+          </div>
+          <div class="widget-panel">
+            <h3>Royal tier</h3>
+            <p style="color: var(--muted); font-size: 0.85rem;">40% recurring commission plus early access to new strategies at 25+ referrals.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/shell.js"></script>
+    <script src="/js/pages/affiliates.js"></script>
+  </body>
+</html>

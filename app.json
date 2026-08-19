@@ -1,0 +1,51 @@
+{
+  "name": "kingbot-platform",
+  "description": "KINGBOT AI Trading System - dashboard, bots, signals and broker connections",
+  "repository": "",
+  "keywords": ["node", "express", "mongodb", "trading"],
+  "env": {
+    "NODE_ENV": {
+      "description": "Runtime environment",
+      "value": "production"
+    },
+    "HOST": {
+      "description": "Interface the server binds to",
+      "value": "0.0.0.0"
+    },
+    "PORT": {
+      "description": "Port the server listens on. Render supplies this automatically.",
+      "value": "3000"
+    },
+    "APP_URL": {
+      "description": "Public URL of the deployed app, used for OAuth redirects and CORS",
+      "value": "https://gibsonfx.online"
+    },
+    "MONGODB_URI": {
+      "description": "MongoDB connection string (e.g. from MongoDB Atlas)",
+      "required": true
+    },
+    "JWT_SECRET": {
+      "description": "Long random string used to sign session tokens",
+      "generator": "secret",
+      "required": true
+    },
+    "GOOGLE_CLIENT_ID": {
+      "description": "OAuth client ID from Google Cloud Console, used for Sign in with Google",
+      "required": true
+    },
+    "GOOGLE_CLIENT_SECRET": {
+      "description": "OAuth client secret from Google Cloud Console",
+      "required": true
+    },
+    "ADMIN_EMAIL": {
+      "description": "The only email address allowed to sign in to /admin. A matching admin account is created automatically on first boot.",
+      "value": "admin@gibsonfx.online",
+      "required": true
+    },
+    "ADMIN_PASSWORD": {
+      "description": "Password for the admin account. Change this from the default before going live.",
+      "value": "Admin@124#",
+      "required": true
+    }
+  }
+}
